@@ -1,8 +1,9 @@
 package njgis.opengms.datacontainer.controller;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.sun.org.apache.regexp.internal.RE;
+// import com.sun.org.apache.regexp.internal.RE;
 import lombok.extern.slf4j.Slf4j;
 import njgis.opengms.datacontainer.bean.JsonResult;
 import njgis.opengms.datacontainer.config.FtpConfig;
@@ -578,6 +579,63 @@ public class DataContainerController {
             File picFile = new File(visualPath + "/" + oid + ".png");
             dataContainer.downLoadFile(response, picFile, oid + ".png", type);
             log.info("取得缓存下载成功");
+        }
+    }
+
+
+    public String readJsonFile(String filePath) {
+        String jsonStr = "";
+        try {
+            File jsonFile = new File(filePath);
+            Reader reader = new InputStreamReader(new FileInputStream(jsonFile), "utf-8");
+            int ch = 0;
+            StringBuffer sb = new StringBuffer();
+            while ((ch = reader.read()) != -1) {
+                sb.append((char) ch);
+            }
+            reader.close();
+            jsonStr = sb.toString();
+            return jsonStr;
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return null;
+        }
+    }
+    /**
+     * 泛在结果数据处理
+     * @param uid 待处理文件，暂时考虑为文本，如果是 json 最好了
+     * @return   返回一个列表 [] 的 json 对象
+     * @throws Exception 异常处理
+     */
+    @RequestMapping(value = "/fanzai/{uid}", method = RequestMethod.GET)
+    public JsonResult fanzaiDataProcessing(@PathVariable String uid, HttpServletResponse response) throws Exception {
+        JsonResult jsonResult = new JsonResult();
+        BulkDataLink bulkDataLink = bulkDataLinkDao.findFirstByZipOid(uid);
+        log.info(bulkDataLink.toString());
+        if (bulkDataLink == null) {
+            jsonResult.setCode(-1);
+            jsonResult.setMessage("the uid isn't right.");
+            return jsonResult;
+        }
+        try {
+            ArrayList<String> list = new ArrayList<String>();
+            for(int i = 0; i < bulkDataLink.getDataOids().size(); ++i) {
+                String fileOid = bulkDataLink.getDataOids().get(i);
+                DataListCom dataListCom = dataListComDao.findFirstByOid((fileOid));
+                String path = dataListCom.getPath() + "/" + dataListCom.getFileName();
+                String temp = readJsonFile(path);
+                if(temp != null && temp != "") {
+                    list.add(temp);
+                }
+            }
+            jsonResult.setCode(0);
+            jsonResult.setData(list);
+            jsonResult.setMessage("返回数据成功");
+            return jsonResult;
+        }catch (Exception error) {
+            jsonResult.setCode(-1);
+            jsonResult.setMessage("error");
+            return  jsonResult;
         }
     }
 

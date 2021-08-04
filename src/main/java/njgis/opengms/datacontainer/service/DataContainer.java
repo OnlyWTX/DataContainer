@@ -22,7 +22,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
 import org.springframework.web.multipart.MultipartFile;
-import sun.security.timestamp.TSRequest;
+// import sun.security.timestamp.TSRequest;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
