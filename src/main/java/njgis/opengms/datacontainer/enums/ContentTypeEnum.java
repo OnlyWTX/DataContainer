@@ -19,7 +19,8 @@ public enum ContentTypeEnum {
     PDF(6, "application/pdf"),
     WORD(6, "application/msword"),
     OCTET_STREAM(6, "application/octet-stream"),
-    X_WWW_FORM_URLENCODED(6, "application/x-www-form-urlencoded ");
+    X_WWW_FORM_URLENCODED(6, "application/x-www-form-urlencoded "),
+    MP4(6, "video/mp4");
 
     private int number;
     private String text;

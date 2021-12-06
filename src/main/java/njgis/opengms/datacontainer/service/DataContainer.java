@@ -28,6 +28,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.Proxy;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.concurrent.*;
@@ -984,6 +985,9 @@ public class DataContainer {
         FileOutputStream fileOutputStream = null;
         String fileName = null;
         if (dataUrl!=null){
+            if(dataUrl.indexOf("https://geomodeling.njnu.edu.cn/dataTransferServer") != -1) {
+                dataUrl = dataUrl.replace("https://geomodeling.njnu.edu.cn/dataTransferServer", "http://221.226.60.2:8082");
+            }
             URL url = new URL(dataUrl);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setConnectTimeout(5000);
